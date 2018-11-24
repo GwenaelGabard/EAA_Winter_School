@@ -27,11 +27,11 @@ border ff(t=-pi,-pi/2){ x=r1*cos(t) ; y=r1*sin(t) + l2+r2; label=1;}
 border gg(t=0,1){ x=d*t ; y=l2+r2-r1 ; label=1;}
 border hh(t=-pi/2,0){ x=r1*cos(t)+d ; y=r1*sin(t) + l2+r2; label=1;}
 border ii(t=0,1){ x=d+r1 ; y=l1*t+l2+r2 ; label=1;}
-border jj(t=0,1){ x=d*t+d+r1 ; y=l1+l2+r2 ; label=10;} // Excitation
+border jj(t=0,1){ x=d*t+d+r1 ; y=l1+l2+r2 ; label=1;}
 border kk(t=1,0){ x=2*d+r1 ; y=l1*t+l2+r2 ; label=1;}
 border ll(t=0,-pi/2){ x=r2*cos(t)+d ; y=r2*sin(t) + l2+r2; label=1;}
 border mm(t=1,0){ x=d ; y=l2*t ; label=1;}
-border nn(t=1,0){ x=d*t ; y=0. ; label=20;} // Clamped edge
+border nn(t=1,0){ x=d*t ; y=0. ; label=2;} // Clamped edge
 
 // Generate the mesh
 mesh ThS = buildmesh(aa(-ceil(nbe*l2))+bb(-ceil(nbe*0.5*pi*r2))+cc(-ceil(nbe*l1))+dd(-ceil(nbe*d))+ee(-ceil(nbe*l1))+ff(-ceil(nbe*0.5*pi*r1))+gg(-ceil(nbe*d))+hh(-ceil(nbe*0.5*pi*r1))+ii(-ceil(nbe*l1))+jj(-ceil(nbe*d))+kk(-ceil(nbe*l1))+ll(-ceil(nbe*0.5*pi*r2))+mm(-ceil(nbe*l2))+nn(-ceil(nbe*d)),fixeborder=true);
@@ -51,11 +51,11 @@ VhS [ux,uy],[uxtest,uytest];
 
 // Variational formulation for the mass matrix
 // Note that we impose to have zero displacement on the boundary labelled 20
-varf varmm([ux,uy],[uxtest,uytest]) =	int2d(ThS)(rhoS*(ux*uxtest+uy*uytest)) + on(20,ux=0.,uy=0.);
+varf varmm([ux,uy],[uxtest,uytest]) =	int2d(ThS)(rhoS*(ux*uxtest+uy*uytest)) + on(2,ux=0.,uy=0.);
 
 // Variational formulation for the stiffness matrix
 // Note that we impose to have zero displacement on the boundary labelled 20
-varf varkk([ux,uy],[uxtest,uytest]) =	int2d(ThS)((Hooke*e(ux,uy))'*e(uxtest,uytest)) + on(20,ux=0.,uy=0.);
+varf varkk([ux,uy],[uxtest,uytest]) =	int2d(ThS)((Hooke*e(ux,uy))'*e(uxtest,uytest)) + on(2,ux=0.,uy=0.);
 
 // Assemble the mass matrix
 matrix KK =	varkk(VhS,VhS,solver=Crout,factorize=1,eps=1e-20);

@@ -64,6 +64,14 @@ To use it you can...
 \section{Sound field in a cavity}
 
 We begin with the calculation of the sound field in a cavity with a vibrating wall.
+This sound field is governed by the Helmholtz equation
+\begin{equation}
+k^2p + \nabla^2 p = 0
+\;,
+\label{eq:helmholtz}
+\end{equation}
+where $k=\omega/c_0$ is the acoustic wavenumber with $\omega$ the angular frequency and $c_0$ the sound speed.
+
 The first part of the file \code{cavity.edp} defines a number of boundaries for the computational domain and plot the resulting geometry (using 20 points per boundary):
 \begin{lstlisting}
 // Create the boundaries of the computational domain
@@ -76,7 +84,7 @@ border a5(t=0,1) { x= t; y= 0 ;}
 border a6(t=0,1) { x= 1+4*t; y= t ;}
 
 // Plot the geometry of the computational domain
-plot( a0(20) + a1(20)+ a2(20) +  a3(20) + a4(20) + a5(20) + a6(20),wait=1,ps="domain.eps" );
+plot( a0(20) + a1(20) + a2(20) + a3(20) + a4(20) + a5(20) + a6(20), wait=1, ps="domain.eps" );
 \end{lstlisting}
 This results in figure \ref{fig:geometry}
 \begin{figure}[h]
@@ -96,7 +104,7 @@ The mesh can then be shown using the following command, resulting in figure
 // Plot the mesh
 plot(Th, wait=1, ps="Th.eps");
 \end{lstlisting}
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=80mm]{mesh.eps}
 \caption{Mesh of the computational domain}
@@ -132,7 +140,7 @@ plot(p, fill=1);
 which gives figure \ref{fig:solution1}.
 \begin{figure}[h]
 \centering
-\includegraphics[width=80mm]{solution1.eps}
+\includegraphics[width=80mm]{solution_P1.eps}
 \caption{Solution of the cavity problem using linear elements and 20 elements per boundary.}
 \label{fig:solution1}
 \end{figure}
@@ -146,22 +154,53 @@ For $k=10$, how many elements per wavelength does this correspond to?
 
 \textbf{Question 4:} Change the variational formulation in the file \code{cavity.edp} so that the forcing is applied on the boundary $\Gamma_6$.
 
-\section{Vibration of a tuning fork}
+
+\section{Modes of vibration of a tuning fork}
 
 The second example we consider is the modes of vibration of a tuning fork in two dimensions.
-The input file for FreeFEM++ is called \code{tuning\_fork.edp}.
-Please read through the comments included in this file.
-The vibration of the tuning fork follows the equation of linear elasticity in the time-harmonic regime:
-$$
--\omega^2\mathbf{u} = \nabla\cdot\boldsymbol{\sigma}
+The vibration of the tuning fork follows the equation of linear elasticity in the time-harmonic regime (with a time dependence $\ee^{\ii\omega t}$):
+\begin{equation}
+-\rho\omega^2\mathbf{u} = \nabla\cdot\boldsymbol{\sigma}
 \;,\quad
 \boldsymbol{\sigma} = \lambda\nabla\cdot\mathbf{u} + 2\mu\boldsymbol{\varepsilon}
-$$
+\label{eq:elasticity}
+\end{equation}
 where $\mathbf{u}$ is the displacement of the elastic solid.
-$\boldsymbol{\varepsilon}$ is the strain tensor and $\lambda$ and $\mu$ are the Lamé constant.
-After generating a mesh of the tuning fork, the script calculates the mass and stiffness matrices.
-An eigenvalue problem is then solved to find the resonance frequencies $\omega$ of the tuning fork as well as the associated displacement fields.
+$\boldsymbol{\sigma}$ is the stress tensor and $\boldsymbol{\varepsilon}$ is the strain tensor.
+$\lambda$ and $\mu$ are the Lamé coefficients and $\rho$ is the material density.
+The boundary conditions on the tuning fork are that there is no normal stress on the surface $\boldsymbol{\sigma}\mathbf{n} = 0$, except at the base of the fork (denoted $\Gamma_2$) where it is fixed $\mathbf{u}=\mathbf{0}$.
 
-\textbf{Question 5:} Increase the mesh resolution and see how this influences the resonance frequencies.
+The input file to solve this problem with FreeFEM++ is called \code{tuning\_fork.edp}.
+Please read through the comments included in this file.
+After generating a mesh of the tuning fork (see figure \ref{fig:mesh_fork}), the script calculates the mass and stiffness matrices based on the following variational formulation:
+$$
+\int_\Omega \boldsymbol{\sigma}:\boldsymbol{\varepsilon} - \rho\omega^2\mathbf{u}\cdot\mathbf{v}\,\dd\Omega
+\;,\quad
+\text{with } \mathbf{u}=\mathbf{0} \text{ on } \Gamma_2
+\;,
+$$
+where $\mathbf{v}$ is the test function associated with the displacement field $\mathbf{u}$.
+An eigenvalue problem is then solved to find the resonance frequencies $\omega$ of the tuning fork as well as the associated displacement fields.
+The deformed shape of the tuning fork induced by each mode is shown in turn.
+The resonance frequencies of the modes are also printed out.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=80mm]{fork_mesh.eps}
+\caption{Mesh for the tuning fork.}
+\label{fig:mesh_fork}
+\end{figure}
+
+\textbf{Question 5:} Increase the mesh resolution by changing the variable \code{nbe} and see how this influences the resonance frequencies.
+
+
+\section{Fluid-structure interaction}
+
+In this section we still consider the tuning fork but we now include the coupling between the fork and the surrounding air, and we calculate the response of these coupled systems (fluid \& structure) to a time-harmonic excitation.
+
+The equation of motion for the structure are those given in equation \eqref{eq:elasticity}.
+The sound waves in the fluid surrounding the tuning fork are governed by the Helmholtz equation \eqref{eq:helmholtz}.
+
+
 
 \end{document}

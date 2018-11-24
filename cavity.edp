@@ -26,3 +26,4 @@ solve cavity(p,q)=int2d(Th)(k*k*p*q - dx(p)*dx(q) - dy(p)*dy(q)) - int1d(Th,a4)(
 
 // Plot the result
 plot(p, fill=1);
+plot(p, fill=1,ps="solution_P1.eps");
