@@ -50,14 +50,18 @@
 \begin{document}
 
 \begin{center}
-\textbf{EAA Winter School in Computational Acoustics}
+EAA Winter School in Computational Acoustics
 
-Tutorial on FreeFEM++
+Le Mans Université, December 2018
+\vspace{5mm}
+
+\textbf{\large Tutorial on FreeFEM++}
 \end{center}
 
 \vspace{10mm}
 
-This part of the tutorial on finite elements uses the FreeFEM++ package which is freely available at ???.
+This part of the tutorial on finite elements uses the FreeFEM++ package which is freely available at \texttt{https://freefem.org}.
+The documentation can be found at \texttt{https://doc.freefem.org}.
 It is already installed on the workstations.
 To use it you can...
 
@@ -72,7 +76,15 @@ k^2p + \nabla^2 p = 0
 \end{equation}
 where $k=\omega/c_0$ is the acoustic wavenumber with $\omega$ the angular frequency and $c_0$ the sound speed.
 
-The first part of the file \code{cavity.edp} defines a number of boundaries for the computational domain and plot the resulting geometry (using 20 points per boundary):
+The first part of the file \code{cavity.edp} defines a number of boundaries for the computational domain shown in figure \ref{fig:CavityGeometry}:
+\begin{figure}[h]
+\centering
+\includegraphics[width=60mm]{cavity.pdf}
+\hfill
+\includegraphics[width=80mm]{mesh.eps}
+\caption{Left: Geometry of the computational domain; Right: Example of triangular mesh for the cavity.}
+\label{fig:CavityGeometry}
+\end{figure}
 \begin{lstlisting}
 // Create the boundaries of the computational domain
 border a0(t=0,1) { x= 5; y= 1+2*t ;}
@@ -82,47 +94,34 @@ border a3(t=0,1) { x= 1-t; y= 1 ;}
 border a4(t=0,1) { x= 0; y= 1-t ;} 
 border a5(t=0,1) { x= t; y= 0 ;} 
 border a6(t=0,1) { x= 1+4*t; y= t ;}
-
-// Plot the geometry of the computational domain
-plot( a0(20) + a1(20) + a2(20) + a3(20) + a4(20) + a5(20) + a6(20), wait=1, ps="domain.eps" );
 \end{lstlisting}
-This results in figure \ref{fig:geometry}
-\begin{figure}[h]
-\centering
-\includegraphics[width=80mm]{domain.eps}
-\caption{Geometry of the computational domain}
-\label{fig:geometry}
-\end{figure}
+Each boundary is parametrized using a parameter \code{t} varying from 0 to 1.
 
-The next step is to generate a mesh of the computational domain using triangular elements:
+The next step is to generate a mesh of the computational domain using triangular elements and 20 elements per boundary:
 \begin{lstlisting}
 // Generate a mesh of the domain using 20 elements per edge
-mesh Th=buildmesh( a0(20) + a1(20)+ a2(20) +  a3(20) + a4(20) + a5(20) + a6(20) );
+mesh Th=buildmesh( a0(20) + a1(20) + a2(20) + a3(20) + a4(20) + a5(20) + a6(20) );
 \end{lstlisting}
-The mesh can then be shown using the following command, resulting in figure
+The resulting mesh can then be shown using the following command, see figure \ref{fig:CavityGeometry}.
 \begin{lstlisting}
 // Plot the mesh
 plot(Th, wait=1, ps="Th.eps");
 \end{lstlisting}
-\begin{figure}[ht]
-\centering
-\includegraphics[width=80mm]{mesh.eps}
-\caption{Mesh of the computational domain}
-\label{fig:mesh}
-\end{figure}
 
-We define the approximation space which is formed of linear interpolation functions on the mesh previously created:
+We define the approximation space \code{Vh} which is formed of linear interpolation functions (\code{P1} denotes the polynomials of order 1) on the mesh \code{Th} previously created:
 \begin{lstlisting}
 // Define the approximation space based on linear elements
 fespace Vh(Th,P1);
 Vh p,q;
 \end{lstlisting}
 
-Finally we can solve the variational formulation for the Helmholtz equation
+Finally we can solve the following variational formulation for the Helmholtz equation where we impose $\partial p/\partial n=1$ on the boundary $\Gamma_4$:
 $$
 \int_\Omega k^2qp - \nabla q\cdot\nabla p\,\dd\Omega+
 \int_{\Gamma_4} q\,\dd\Gamma
 =0
+\;,\quad
+\forall q
 \;.
 $$
 \begin{lstlisting}
@@ -130,7 +129,7 @@ $$
 real k = 10;
 solve cavity(p,q)=int2d(Th)(k*k*p*q - dx(p)*dx(q) - dy(p)*dy(q)) - int1d(Th,a4)(q);
 \end{lstlisting}
-In this code we have set $k=10$.
+In this code we solve the problem for a wavenumber $k=10$.
 
 We can plot the pressure field given by the finite-element model:
 \begin{lstlisting}
@@ -145,7 +144,7 @@ which gives figure \ref{fig:solution1}.
 \label{fig:solution1}
 \end{figure}
 
-\textbf{Question 1:} Switch to a quadratic approximation space by using \code{P2} instead of \code{P1} in the definition of the approximation spaces \code{p} and \code{q}.
+\textbf{Question 1:} Switch to a quadratic approximation space by using \code{P2} instead of \code{P1} in the definition of the approximation space \code{Vh}.
 
 \textbf{Question 2:} Using a linear approximation of the solution, use a finer mesh with 40 element along each boundary.
 For $k=10$, how many elements per wavelength does this correspond to?
@@ -154,29 +153,35 @@ For $k=10$, how many elements per wavelength does this correspond to?
 
 \textbf{Question 4:} Change the variational formulation in the file \code{cavity.edp} so that the forcing is applied on the boundary $\Gamma_6$.
 
+\clearpage
 
 \section{Modes of vibration of a tuning fork}
 
 The second example we consider is the modes of vibration of a tuning fork in two dimensions.
+The geometry of the fork is shown in figure \ref{fig:mesh_fork}.
 The vibration of the tuning fork follows the equation of linear elasticity in the time-harmonic regime (with a time dependence $\ee^{\ii\omega t}$):
 \begin{equation}
 -\rho\omega^2\mathbf{u} = \nabla\cdot\boldsymbol{\sigma}
 \;,\quad
-\boldsymbol{\sigma} = \lambda\nabla\cdot\mathbf{u} + 2\mu\boldsymbol{\varepsilon}
+\boldsymbol{\sigma}(\mathbf{u}) = \lambda\nabla\cdot\mathbf{u} + 2\mu\boldsymbol{\varepsilon}
+\;,\quad
+\boldsymbol{\varepsilon}(\mathbf{u}) = \frac{1}{2}( \nabla\mathbf{u} + \nabla\mathbf{u}^T )
+\;,
 \label{eq:elasticity}
 \end{equation}
-where $\mathbf{u}$ is the displacement of the elastic solid.
-$\boldsymbol{\sigma}$ is the stress tensor and $\boldsymbol{\varepsilon}$ is the strain tensor.
+where $\mathbf{u}$ is the displacement of the elastic solid, $\boldsymbol{\sigma}$ is the stress tensor and $\boldsymbol{\varepsilon}$ is the strain tensor.
 $\lambda$ and $\mu$ are the Lamé coefficients and $\rho$ is the material density.
-The boundary conditions on the tuning fork are that there is no normal stress on the surface $\boldsymbol{\sigma}\mathbf{n} = 0$, except at the base of the fork (denoted $\Gamma_2$) where it is fixed $\mathbf{u}=\mathbf{0}$.
+The boundary conditions on the tuning fork are that there is no normal stress on the surface ($\boldsymbol{\sigma}\cdot\mathbf{n} = 0$) except at the base of the fork (denoted $\Gamma_2$) where it is fixed ($\mathbf{u}=\mathbf{0}$).
 
 The input file to solve this problem with FreeFEM++ is called \code{tuning\_fork.edp}.
 Please read through the comments included in this file.
 After generating a mesh of the tuning fork (see figure \ref{fig:mesh_fork}), the script calculates the mass and stiffness matrices based on the following variational formulation:
 $$
-\int_\Omega \boldsymbol{\sigma}:\boldsymbol{\varepsilon} - \rho\omega^2\mathbf{u}\cdot\mathbf{v}\,\dd\Omega
+\int_\Omega \boldsymbol{\sigma}(\mathbf{u}):\boldsymbol{\varepsilon}(\mathbf{v}) - \rho\omega^2\mathbf{u}\cdot\mathbf{v}\,\dd\Omega
 \;,\quad
 \text{with } \mathbf{u}=\mathbf{0} \text{ on } \Gamma_2
+\;,\quad
+\forall \mathbf{v}
 \;,
 $$
 where $\mathbf{v}$ is the test function associated with the displacement field $\mathbf{u}$.
@@ -186,33 +191,47 @@ The resonance frequencies of the modes are also printed out.
 
 \begin{figure}[h]
 \centering
+\includegraphics[width=17mm]{fork.pdf}
+\hspace{20mm}
 \includegraphics[width=80mm]{fork_mesh.eps}
-\caption{Mesh for the tuning fork.}
+\caption{Left: Geometry of the computational domain. Right: Mesh for the tuning fork.}
 \label{fig:mesh_fork}
 \end{figure}
 
 \textbf{Question 5:} Increase the mesh resolution by changing the variable \code{nbe} and see how this influences the resonance frequencies.
 
+\clearpage
 
 \section{Fluid-structure interaction}
 
 In this section we still consider the tuning fork but we now include the coupling between the fork and the surrounding air, and we calculate the response of these coupled systems (fluid \& structure) to a time-harmonic excitation.
 
-The equation of motion for the structure are those given in equation \eqref{eq:elasticity}.
+The equations of motion for the structure are those given in equation \eqref{eq:elasticity}.
 The sound waves in the fluid surrounding the tuning fork are governed by the Helmholtz equation \eqref{eq:helmholtz}.
 The variational formulations are as follows:
 $$
-\int_\Omega \boldsymbol{\sigma}:\boldsymbol{\varepsilon} - \rho\omega^2\mathbf{u}\cdot\mathbf{v}\,\dd\Omega
+\int_{\Omega_\mathrm{s}} \boldsymbol{\sigma}(\mathbf{u}):\boldsymbol{\varepsilon}(\mathbf{v}) - \rho\omega^2\mathbf{u}\cdot\mathbf{v}\,\dd\Omega - \int_{\Gamma_0} p \mathbf{v}\cdot\mathbf{n}_\mathrm{s}\,\dd\Gamma
+-\int_{\Gamma_1} \mathbf{v}\cdot\mathbf{t}\,\dd\Gamma
 \;,\quad
 \text{with } \mathbf{u}=\mathbf{0} \text{ on } \Gamma_2
-\;,
+\;,\quad
+\forall \mathbf{v}
 $$
 $$
-\int_\Omega k^2qp - \nabla q\cdot\nabla p\,\dd\Omega+
-\int_{\Gamma_4} q\,\dd\Gamma
+\frac{1}{\rho_0\omega^2}\int_{\Omega_\mathrm{a}} \nabla q\cdot\nabla p - k^2qp \,\dd\Omega - \int_{\Gamma_0} q\mathbf{u}\cdot\mathbf{n}_\mathrm{a}\,\dd\Gamma
 =0
+\;,\quad
+\forall q
 \;.
 $$
+$\Omega_\mathrm{s}$ and $\Omega_\mathrm{a}$ are the structure and fluid domains, respectively.
+$\mathbf{t}$ is the force on the fork on its upper right boundary ($\Gamma_1$).
 The last terms in each of these equations are responsible for the coupling between the fluid and the structure.
+
+\textbf{Question 6:} ...
+
+\textbf{Question 7:} ...
+
+\textbf{Question 8:} ...
 
 \end{document}
