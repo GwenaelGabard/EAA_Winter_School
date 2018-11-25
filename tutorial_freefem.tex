@@ -200,7 +200,19 @@ In this section we still consider the tuning fork but we now include the couplin
 
 The equation of motion for the structure are those given in equation \eqref{eq:elasticity}.
 The sound waves in the fluid surrounding the tuning fork are governed by the Helmholtz equation \eqref{eq:helmholtz}.
-
-
+The variational formulations are as follows:
+$$
+\int_\Omega \boldsymbol{\sigma}:\boldsymbol{\varepsilon} - \rho\omega^2\mathbf{u}\cdot\mathbf{v}\,\dd\Omega
+\;,\quad
+\text{with } \mathbf{u}=\mathbf{0} \text{ on } \Gamma_2
+\;,
+$$
+$$
+\int_\Omega k^2qp - \nabla q\cdot\nabla p\,\dd\Omega+
+\int_{\Gamma_4} q\,\dd\Gamma
+=0
+\;.
+$$
+The last terms in each of these equations are responsible for the coupling between the fluid and the structure.
 
 \end{document}
