@@ -228,10 +228,13 @@ $\Omega_\mathrm{s}$ and $\Omega_\mathrm{a}$ are the structure and fluid domains,
 $\mathbf{t}$ is the force on the fork on its upper right boundary ($\Gamma_1$).
 The last terms in each of these equations are responsible for the coupling between the fluid and the structure.
 
-\textbf{Question 6:} ...
+This formulation of the fluid-structure interaction is implemented in the script \code{tuning\_fork\_FSI.edp}.
+It calculates the response of the coupled systems to a forcing on the tuning fork and plots the sound field around the tuning fork.
 
-\textbf{Question 7:} ...
+\textbf{Question 6:} Run the simulation with the default parameters.
 
-\textbf{Question 8:} ...
+\textbf{Question 7:} Modify the script to calculate the response up to a frequency of $900\,\mathrm{Hz}$ instead of $450\,\mathrm{Hz}$. How should you modify the mesh size in the solid \code{nbe} and in the fluid \code{nbeF} to maintain the same numerical resolution?
+
+\textbf{Question 8:} Remove the influence of the fluid on the structure by removing the term $p\mathbf{v}\cdot\mathbf{n}_\mathrm{s}$ from the formulation. Do you see a significant change in the solution when this part of the coupling is ignored?
 
 \end{document}

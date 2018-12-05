@@ -23,7 +23,7 @@ int nbfrq = 10;
 // Lowest frequency
 real fmin = 100;
 // Highest frequency
-real fmax = 449;
+real fmax = 450;
 // Generate a list of frequencies
 real[int] freq(nbfrq);
 for(int ii=0; ii<nbfrq; ii++) {
@@ -135,7 +135,7 @@ for(int ii=0; ii<nbfrq; ii++) {
   // Assemble the coupling matrix and create its transpose
   matrix<complex> C =	c(VhF,VhS);
   matrix<complex> CT = -C';
-
+  
   // Create the full system of equations
   matrix<complex> M = [[  KM,	  C	],
 					            [   CT,		HQ ]];
