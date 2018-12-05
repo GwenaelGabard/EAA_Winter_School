@@ -2,3 +2,6 @@
 *.log
 *.aux
 *.spl
+TeX/.DS_Store
+.DS_Store
+*.out
