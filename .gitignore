@@ -5,6 +5,10 @@
 TeX/.DS_Store
 .DS_Store
 *.out
+<<<<<<< HEAD
 *.envrc
 *results/
 *__pycache__/
+=======
+.ipynb_checkpoints
+>>>>>>> e6eab1579d14dd40112ac3e1653997f850a42984
