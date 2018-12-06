@@ -38,7 +38,7 @@ class FDTD:
     Finite Difference Time Domain Method
     """
 
-    def __init__(self, param, stencil='7pt_o', filtering='yes'):
+    def __init__(self, param, stencil='7pts_o', filtering='yes'):
 
         self.param = param
         self.probe = []
