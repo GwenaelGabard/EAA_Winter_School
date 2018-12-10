@@ -61,10 +61,10 @@ def GaussianPulseDR(epsilon, Bx, c0, zm, zs, LOG='no'):
     df = f[2] - f[1]
     wtime = np.linspace(0, 1/df, Npadd)
 
-    # Puissance de la source % omega
+    # Power of the source % omega
     Sw = 1j*k*np.pi*epsilon*B**2*np.exp(-k**2*B**2/4.)/c0
 
-    # Pression dans le domaine freq.
+    # Pressure in the freq domain.
     Pdw = -1j*Sw*hankel1(0, k*r1)/4.
     Prw = -1j*Sw*hankel1(0, k*r2)/4.
 
